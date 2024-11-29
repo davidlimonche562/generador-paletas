@@ -27,11 +27,29 @@ body {
   }
   
   .color-box {
-    width: 100px;
-    height: 100px;
+    width: 150px;
+    height: 150px;
     margin: 10px;
     text-align: center;
     line-height: 100px;
     color: #fff;
     position: relative;
+  }
+
+#delete-button{
+    position: absolute;
+    right: 5px;
+    top: 10px;
+}
+
+#color-input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  
+  #color-input {
+    padding: 5px;
+    width: 200px;
   }

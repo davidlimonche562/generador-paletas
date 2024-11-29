@@ -7,8 +7,16 @@
 <link rel="stylesheet" href="style/styles.css">
 </head>
 <body>
+
 <header>
     <h1>Generador de Paletas</h1>
+    <div id="color-input-container">
+        <label for="color-picker">Selecciona o ingresa un color:</label>
+        <input type="text" id="color-input" placeholder="#FFFFFF o rgb(255,255,255) o hsl(0,100%,50%)">
+        <input type="color" id="color-picker">
+        <button id="add-custom-color">Agregar Color</button>
+      </div>
+      
     <button id="generate">Generar Paleta</button>
     <button id="add-color">+ Añadir Color</button>
 </header>
