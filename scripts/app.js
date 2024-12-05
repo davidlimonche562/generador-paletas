@@ -1,11 +1,52 @@
 const boton = document.getElementById('generate');
 const paletteContainer = document.getElementById('palette');
 document.getElementById('add-color').addEventListener('click', agregarColor);
+document.getElementById('add-custom-color').addEventListener('click', agregarColorPersonalizado);
+const colorPicker = document.getElementById('color-picker');
+const colorInput = document.getElementById('color-input');
+const complementarioBtn = document.getElementById('complementario');
+
+let colores = ["#000000"];
+let bloqueados = [];
+let colorBase = colores[0]; // Inicializa un color base por defecto
+
+let bloqueaSincronizacion = false; // Controla para evitar bucles de sincronización
+
+// Sincronizar el input y el picker
+colorInput.addEventListener('input', () => {
+    if (!bloqueaSincronizacion) {
+        const color = colorInput.value.trim();
+        if (esColorValido(color)) {
+            bloqueaSincronizacion = true;
+            colorPicker.value = color; // Actualizar el picker con el valor del input
+            colorBase = color; // Actualizar el color base
+            bloqueaSincronizacion = false;
+        }
+    }
+});
+
+colorPicker.addEventListener('input', () => {
+    if (!bloqueaSincronizacion) {
+        bloqueaSincronizacion = true;
+        colorInput.value = colorPicker.value; // Actualizar el input con el valor del picker
+        colorBase = colorPicker.value; // Actualizar el color base
+        bloqueaSincronizacion = false;
+    }
+});
+
+// Generar colores complementarios
+complementarioBtn.addEventListener('click', () => {
+    if (!esColorValido(colorBase)) {
+        alert('Por favor selecciona un color base válido.');
+        return;
+    }
+    const [base, complementario] = generarColoresComplementarios(colorBase);
+    colores = [base, complementario];
+    bloqueados = [true, true]; // Bloquear ambos colores
+    renderisarPaleta(colores);
+});
 
 boton.addEventListener('click', generarPaleta);
-
-let colores = [];
-let bloqueados = [];
 
 // Generar la paleta inicial o regenerar
 function generarPaleta() {
@@ -28,15 +69,12 @@ function renderisarPaleta(colores) {
         div.className = 'color-box';
         div.style.backgroundColor = color;
 
-        // Contenedor de texto y botones
         const contentDiv = document.createElement('div');
         contentDiv.style.position = 'relative';
 
-        // Texto del color
         const colorText = document.createElement('span');
         colorText.textContent = color;
 
-        // Botón de bloqueo
         const botonBloqueo = document.createElement('button');
         botonBloqueo.textContent = bloqueados[index] ? '🔒' : '🔓';
         botonBloqueo.className = 'boton-bloqueo';
@@ -45,7 +83,6 @@ function renderisarPaleta(colores) {
             botonBloqueo.textContent = bloqueados[index] ? '🔒' : '🔓';
         });
 
-        // Botón de eliminación
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'X';
         deleteButton.className = 'delete-button';
@@ -76,9 +113,7 @@ function agregarColor() {
 
 // Agregar un color personalizado
 function agregarColorPersonalizado() {
-    const colorInput = document.getElementById('color-input').value.trim();
-    const colorPicker = document.getElementById('color-picker').value;
-    const color = colorInput || colorPicker;
+    const color = colorInput.value.trim() || colorPicker.value;
 
     if (!esColorValido(color)) {
         alert('Por favor, ingresa un color válido en formato HEX, RGB o HSL.');
@@ -107,4 +142,10 @@ function esColorValido(color) {
     const rgbRegex = /^rgb\((\d{1,3}),\s*(\d{1,3}),\s*(\d{1,3})\)$/;
     const hslRegex = /^hsl\(\d{1,3},\s*(\d{1,3})%,\s*(\d{1,3})%\)$/;
     return hexRegex.test(color) || rgbRegex.test(color) || hslRegex.test(color);
+}
+
+function generarColoresComplementarios(colorBase) {
+    const color1 = chroma(colorBase); // Color base
+    const color2 = color1.set('hsl.h', '+180'); // Complementario (180 grados en HSL)
+    return [color1.hex(), color2.hex()];
 }
