@@ -6,6 +6,10 @@ const colorPicker = document.getElementById('color-picker');
 const colorInput = document.getElementById('color-input');
 const complementarioBtn = document.getElementById('complementario');
 
+
+
+
+
 let colores = ["#000000"];
 let bloqueados = [];
 let colorBase = colores[0]; // Inicializa un color base por defecto
@@ -61,6 +65,16 @@ function generarPaleta() {
     renderisarPaleta(colores);
 }
 
+function copiarAlPortapapeles(texto) {
+    navigator.clipboard.writeText(texto)
+        .then(() => {
+            alert("Texto copiado al portapapeles: " + texto);
+        })
+        .catch(err => {
+            console.error("Error al copiar al portapapeles: ", err);
+        });
+}
+
 // Renderizar la paleta de colores
 function renderisarPaleta(colores) {
     paletteContainer.innerHTML = '';
@@ -72,9 +86,21 @@ function renderisarPaleta(colores) {
         const contentDiv = document.createElement('div');
         contentDiv.style.position = 'relative';
 
+        // Crear un span para el texto del color
         const colorText = document.createElement('span');
         colorText.textContent = color;
+        colorText.style.cursor = 'pointer';
+        colorText.className = 'color-text';  // Añadir clase para estilo
+        
+        // Asegurarse de que cada color tenga un id único para evitar conflictos
+        colorText.setAttribute('data-id', index); // Usamos un data-atributo como identificador único
 
+        // Añadir el evento de clic para copiar el color al portapapeles
+        colorText.addEventListener('click', () => {
+            copiarAlPortapapeles(colorText.textContent);
+        });
+
+        // Botón de bloqueo
         const botonBloqueo = document.createElement('button');
         botonBloqueo.textContent = bloqueados[index] ? '🔒' : '🔓';
         botonBloqueo.className = 'boton-bloqueo';
@@ -83,6 +109,7 @@ function renderisarPaleta(colores) {
             botonBloqueo.textContent = bloqueados[index] ? '🔒' : '🔓';
         });
 
+        // Botón de eliminación
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'X';
         deleteButton.className = 'delete-button';
@@ -90,11 +117,13 @@ function renderisarPaleta(colores) {
             eliminarColor(index);
         });
 
+        // Agregar elementos al contenedor
         contentDiv.appendChild(colorText);
         contentDiv.appendChild(botonBloqueo);
         contentDiv.appendChild(deleteButton);
         div.appendChild(contentDiv);
 
+        // Agregar la caja de color al contenedor de la paleta
         paletteContainer.appendChild(div);
     });
 }
